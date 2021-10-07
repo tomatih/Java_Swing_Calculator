@@ -4,7 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Stack;
 
 public class Calculator extends JFrame {
-    private final String[] button_captions = {"9", "8","7","/","6","5","4","*","3","2","1","+","C","0",".","="};
+    private final String[] button_captions = {"9", "8","7","/","6","5","4","*","3","2","1","+","C","0","=","-"};
     private final JButton[] buttons = new JButton[button_captions.length];
     private String equation = "";
 
