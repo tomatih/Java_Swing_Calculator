@@ -34,11 +34,23 @@ public class Calculator extends JFrame {
         });
         return buttons[i];
     }
+
     private int getOrderValue(String symbol){
         return switch (symbol) {
             case "+", "-" -> 1;
             case "*", "/" -> 2;
-            default -> -1;
+            default -> -1; // TODO add better exception handling
+        };
+    }
+
+
+    private int evaluateExpression(char operation, Integer b, Integer a){
+        return switch(operation){
+            case '+' -> a+b;
+            case '-' -> a-b;
+            case '*' -> a*b;
+            case '/' -> a/b;
+            default -> -99999999; //TODO add better exception handling
         };
     }
 
@@ -46,7 +58,7 @@ public class Calculator extends JFrame {
     private void calculate(){
         System.out.println(equation);
         // the two stacks for the RPN
-        Stack<String> mainStack = new Stack<>();
+        Stack<Integer> mainStack = new Stack<>();
         Stack<String> symbolStack = new Stack<>();
         // string for storing multi digit numbers
         String tmp = "";
@@ -58,12 +70,17 @@ public class Calculator extends JFrame {
                 tmp += equation.charAt(i);
             }
             else{ // symbol found
-                mainStack.push(/*Integer.valueOf(*/tmp); // flush memory
+                mainStack.push(Integer.valueOf(tmp)); // flush memory
                 // if stack empty or top operator order val >= of found symbol
                 while(!symbolStack.empty() &&
                         getOrderValue(String.valueOf(equation.charAt(i)))<= getOrderValue(symbolStack.peek())){
                     // add to output stack the previous operator
-                    mainStack.add(symbolStack.pop());
+                    //mainStack.add(symbolStack.pop());
+                    mainStack.push(evaluateExpression(
+                        equation.charAt(i),
+                        mainStack.pop(),
+                        mainStack.pop()
+                        ));
                 }
                 // add current symbol to stack
                 symbolStack.push(String.valueOf(equation.charAt(i)));
@@ -74,13 +91,20 @@ public class Calculator extends JFrame {
         }
         // add the last digit back on stack
         if(tmp!=""){
-            mainStack.push(tmp);
+            mainStack.push(Integer.valueOf(tmp));
         }
         // empty the secondary stack
         while(!symbolStack.empty()){
-            mainStack.add(symbolStack.pop());
+            // mainStack.add(symbolStack.pop());
+            mainStack.push(evaluateExpression(
+                        symbolStack.pop().charAt(0),
+                        mainStack.pop(),
+                        mainStack.pop()
+                        ));
         }
 
+        // Clean the equation from memory
+        equation = "";
         System.out.println(mainStack);
     }
 
