@@ -46,27 +46,42 @@ public class Calculator extends JFrame {
     private void calculate(){
         System.out.println(equation);
         // the two stacks for the RPN
-        Stack<Integer> mainStack = new Stack<>();
+        Stack<String> mainStack = new Stack<>();
         Stack<String> symbolStack = new Stack<>();
         // string for storing multi digit numbers
         String tmp = "";
         // loop through the written equation
         for(int i=0;i<equation.length();i++){
+            System.out.println(equation.charAt(i));
             // if digit add to memory (in case multi digit number)
             if(equation.charAt(i)>='0'&&equation.charAt(i)<='9'){
                 tmp += equation.charAt(i);
             }
             else{ // symbol found
-                mainStack.add(Integer.valueOf(tmp)); // flush memory
-                // if
-                if(symbolStack.empty() ||
+                mainStack.push(/*Integer.valueOf(*/tmp); // flush memory
+                // if stack empty or top operator order val >= of found symbol
+                while(!symbolStack.empty() &&
                         getOrderValue(String.valueOf(equation.charAt(i)))<= getOrderValue(symbolStack.peek())){
-
+                    // add to output stack the previous operator
+                    mainStack.add(symbolStack.pop());
                 }
-                tmp = symbolStack.peek();
+                // add current symbol to stack
+                symbolStack.push(String.valueOf(equation.charAt(i)));
+                // at the end reset tmp
+                tmp = "";
 
             }
         }
+        // add the last digit back on stack
+        if(tmp!=""){
+            mainStack.push(tmp);
+        }
+        // empty the secondary stack
+        while(!symbolStack.empty()){
+            mainStack.add(symbolStack.pop());
+        }
+
+        System.out.println(mainStack);
     }
 
     public static void main(String[] args) throws InvocationTargetException, InterruptedException {
